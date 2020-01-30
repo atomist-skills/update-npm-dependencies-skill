@@ -15,7 +15,7 @@
             [atomist.sha :as sha])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn compute-leiningen-fingerprints
+(defn compute-fingerprints
   "TODO - we used to support multiple pom.xml files in the Project.  The
           path field was added to the Fingerprint to manage this.
           This version supports only a pom.xml in the root of the Repo.
@@ -30,10 +30,9 @@
        (->> (for [x fingerprints]
               (assoc x
                 :sha (sha/sha-256 (json/->str (:data x)))
-                :value (json/->str (:value x))
                 :displayName (:name x)
                 :displayValue (nth (:data x) 1)
-                :displayType "Lein dependencies"))
+                :displayType "NPM dependencies"))
             (into [])))
      (catch :default ex
        (log/error ex)
@@ -50,17 +49,17 @@
   (fn [request]
     (if (not (empty? (-> request :data :CommitFingerprintImpact :offTarget)))
       (handler request)
-      (go (>! (:done-channel request) :done)))))
+      (api/finish request))))
 
 (defn- handle-push-event [request]
-  ((-> (api/finished "handling Push")
+  ((-> (api/finished :message "handling Push")
        (api/send-fingerprints)
-       (api/run-sdm-project-callback compute-leiningen-fingerprints)
+       (api/run-sdm-project-callback compute-fingerprints)
        (api/extract-github-token)
        (api/create-ref-from-push-event)) request))
 
 (defn- handle-impact-event [request]
-  ((-> (api/finished "handling CommitFingerprintImpact")
+  ((-> (api/finished :message "handling CommitFingerprintImpact")
        (api/run-sdm-project-callback
         (sdm/commit-then-PR
          (fn [p] (npm/apply-dependency p (-> request :data :CommitFingerprintImpact :offTarget)))
@@ -75,9 +74,9 @@
        (check-for-targets-to-apply)) request))
 
 (defn command-handler [request]
-  ((-> (api/finished "handling CommandHandler")
+  ((-> (api/finished :message "handling CommandHandler")
        (show-fingerprints-in-slack)
-       (api/run-sdm-project-callback compute-leiningen-fingerprints)
+       (api/run-sdm-project-callback compute-fingerprints)
        (api/create-ref-from-first-linked-repo)
        (api/extract-linked-repos)
        (api/extract-github-user-token)
@@ -102,5 +101,5 @@
        (= :CommitFingerprintImpact (:data request))
        (handle-impact-event request)
 
-       (= "UpdateLeiningenDependencies" (:command request))
+       (= "UpdateNpmDependencies" (:command request))
        (command-handler request)))))
