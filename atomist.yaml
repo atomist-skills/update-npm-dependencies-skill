@@ -17,7 +17,7 @@
 skill:
   name: "atomist/update-npm-dependencies"
   title: Update NPM Dependencies
-  version: "0.1.0"
+  version: "0.1.1"
   author: Atomist
   description: Automatically update dependencies based on your own policy
   long_description: |
@@ -29,6 +29,7 @@ skill:
   homepage: https://github.com/atomist-skills/update-leiningen-dependencies
   repository: https://github.com/atomist-skills/update-leiningen-dependencies
   icon: https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/npm-512.png
+  dispatch: single
 
   package:
     use: 'atomist/package-cljs-skill'
@@ -41,5 +42,22 @@ skill:
 
 commands:
 - name: UpdateNpmDependencies
-  description: "summary of the leiningen dependencies"
+  description: "summary of the npm dependencies"
   pattern: "^update-npm-dependencies.*$"
+
+parameters:
+  - string:
+      description: "Npm Library name"
+      displayName: "Npm Library name"
+      name: "name"
+      required: true
+  - string:
+      description: "Npm library version"
+      displayName: "Npm Library version"
+      name: "version"
+      required: true
+  - repoFilters:
+      description: "The set of Repositories for this String Replace rule."
+      displayName: "Repository Scope"
+      name: "scope"
+      required: false

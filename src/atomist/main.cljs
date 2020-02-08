@@ -16,34 +16,19 @@
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn compute-fingerprints
-  "TODO - we used to support multiple pom.xml files in the Project.  The
-          path field was added to the Fingerprint to manage this.
-          This version supports only a pom.xml in the root of the Repo.
-
-   Transform Maven dependencies into Fingerprints
-
-   Our data structure has {:keys [group artifact version name version scope]}"
-  [project]
+  [request project]
   (go
    (try
      (let [fingerprints (npm/extract project)]
-       (->> (for [x fingerprints]
-              (assoc x
-                :sha (sha/sha-256 (json/->str (:data x)))
-                :displayName (:name x)
-                :displayValue (nth (:data x) 1)
-                :displayType "NPM dependencies"))
-            (into [])))
+       ;; first create PRs for any off target deps
+       (<! (npm/apply-dependencies (assoc request :project project :fingerprints fingerprints)))
+       ;; return the fingerprints in a form that they can be added to the graph
+       fingerprints)
      (catch :default ex
+       (log/error "unable to compute leiningen fingerprints")
        (log/error ex)
-       [{:failure "unable to extract"
-         :message (str ex)}]))))
-
-(defn show-fingerprints-in-slack [handler]
-  (fn [request]
-    (if-let [fingerprints (:results request)]
-      (api/snippet-message request (json/->str fingerprints) "application/json" "fingerprints")
-      (api/simple-message request "no fingerprints"))))
+       {:error ex
+        :message "unable to compute leiningen fingerprints"}))))
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]
@@ -60,13 +45,6 @@
 
 (defn- handle-impact-event [request]
   ((-> (api/finished :message "handling CommitFingerprintImpact")
-       (api/run-sdm-project-callback
-        (sdm/commit-then-PR
-         (fn [p] (npm/apply-dependency p (-> request :data :CommitFingerprintImpact :offTarget)))
-         {:branch (str (random-uuid))
-          :target-branch "master"
-          :body "apply maven target dependencies"
-          :title "apply maven target dependencies"}))
        (api/extract-github-token)
        (api/create-ref-from-repo
         (-> request :data :CommitFingerprintImpact :repo)
@@ -75,7 +53,7 @@
 
 (defn command-handler [request]
   ((-> (api/finished :message "handling CommandHandler")
-       (show-fingerprints-in-slack)
+       (api/show-results-in-slack :result-type "fingerprints")
        (api/run-sdm-project-callback compute-fingerprints)
        (api/create-ref-from-first-linked-repo)
        (api/extract-linked-repos)
