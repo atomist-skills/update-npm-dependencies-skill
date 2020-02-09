@@ -12,7 +12,8 @@
             [atomist.api :as api]
             [atomist.promise :as promise]
             [atomist.npm :as npm]
-            [atomist.sha :as sha])
+            [atomist.sha :as sha]
+            [atomist.deps :as deps])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn compute-fingerprints
@@ -21,7 +22,9 @@
    (try
      (let [fingerprints (npm/extract project)]
        ;; first create PRs for any off target deps
-       (<! (npm/apply-dependencies (assoc request :project project :fingerprints fingerprints)))
+       (<! (deps/apply-name-version-fingerprint-target
+            (assoc request :project project :fingerprints fingerprints)
+            npm/apply-library-editor))
        ;; return the fingerprints in a form that they can be added to the graph
        fingerprints)
      (catch :default ex

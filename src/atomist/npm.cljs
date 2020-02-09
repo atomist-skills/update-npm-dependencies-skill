@@ -7,7 +7,11 @@
             [cljs-node-io.file :as file]
             [goog.string :as gstring]
             [goog.string.format]
-            [atomist.cljs-log :as log]))
+            [atomist.cljs-log :as log]
+            [atomist.sdmprojectmodel :as sdm]
+            [cljs-node-io.proc :as proc]
+            [cljs.core.async :refer [<!]])
+  (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn- deconstruct-name [s]
   (if-let [[_ owner lib] (re-find #"^([^:]+)(::.*)?$" s)]
@@ -15,26 +19,43 @@
       owner
       (gstring/format "@%s/%s" owner (s/replace lib "::" "")))))
 
-(declare apply-library-editor)
-
-(defn apply-dependencies [{:keys [project configurations fingerprints] :as request}]
+(defn npm-update
+  [project f n v]
   (go
-   (let [targets (target-map configurations)]
-     (doseq [{current-data :data :as fingerprint} fingerprints]
-       (doseq [{target-data :data :as target} targets]
-         (when (off-target? fingerprint target)
-           (let [body (gstring/format "off-target clojure-project-deps %s/%s -> %s/%s"
-                                      (nth current-data 0) (nth current-data 1)
-                                      (nth target-data 0) (nth target-data 1))]
-             (log/info body)
-             (<! (apply-library-editor project
-                                       {:branch (-> request :ref :branch)
-                                        :target-branch (:library target)
-                                        :title (gstring/format "%s:  update npm dependencies skill requesting change" (:library target))
-                                        :body body}
-                                       (nth target-data 0)
-                                       (nth target-data 1)))))))
-     :complete)))
+   (let [baseDir (. ^js project -baseDir)]
+     (io/spit f (s/replace
+                 (io/slurp f)
+                 (re-pattern (gstring/format "\"%s\":\\s*\"(.*)\"" n))
+                 (gstring/format "\"%s\": \"%s\"" n v)))
+     (let [[err stdout stderr] (<! (proc/aexec "npm install" {:cwd baseDir}))]
+       (if (nil? err)
+         :success
+         (do
+           (log/info stdout)
+           (log/error stderr)
+           :failure))))))
+
+(defn- apply-library-editor
+  "apply a library edit inside of a PR
+
+    params
+      project - the SDM project
+      pr-opts - must conform to {:keys [branch target-branch title body]}
+      library-name - leiningen library name string
+      library-version - leiningen library version string
+
+    returns channel"
+  [project pr-opts library-name library-version]
+  ((sdm/commit-then-PR
+    (fn [p] (go
+             (try
+               (let [f (io/file (. ^js project -baseDir) "project.clj")]
+                 (npm-update project f library-name library-version))
+               :success
+               (catch :default ex
+                 (log/error "failure updating project.clj for dependency change" ex)
+                 :failure))))
+    pr-opts) project))
 
 (defn extract [project]
   (let [f (io/file (. project -baseDir) "package.json")]
