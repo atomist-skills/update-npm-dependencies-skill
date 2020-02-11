@@ -40,14 +40,14 @@
       (api/finish request))))
 
 (defn- handle-push-event [request]
-  ((-> (api/finished :message "handling Push")
+  ((-> (api/finished :message "handling Push" :success "Successfully handled Push")
        (api/send-fingerprints)
        (api/run-sdm-project-callback compute-fingerprints)
        (api/extract-github-token)
        (api/create-ref-from-push-event)) request))
 
 (defn- handle-impact-event [request]
-  ((-> (api/finished :message "handling CommitFingerprintImpact")
+  ((-> (api/finished :message "handling CommitFingerprintImpact" :success "Successfully handled CommitFingerprintImpact")
        (api/extract-github-token)
        (api/create-ref-from-repo
         (-> request :data :CommitFingerprintImpact :repo)
@@ -55,7 +55,7 @@
        (check-for-targets-to-apply)) request))
 
 (defn command-handler [request]
-  ((-> (api/finished :message "handling CommandHandler")
+  ((-> (api/finished :message "handling CommandHandler" :success "Command Handler invoked")
        (api/show-results-in-slack :result-type "fingerprints")
        (api/run-sdm-project-callback compute-fingerprints)
        (api/create-ref-from-first-linked-repo)
