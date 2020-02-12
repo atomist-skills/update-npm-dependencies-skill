@@ -4,6 +4,8 @@
 
 ## What it does
 
+Keeps dependencies in package.json up-to-date
+
 ## Configuration
 
 | Name                   | Value        | Type   | Required | Notes |
