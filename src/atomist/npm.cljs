@@ -4,11 +4,9 @@
             [atomist.json :as json]
             [cljs-node-io.core :as io]
             [cljs-node-io.fs :as fs]
-            [cljs-node-io.file :as file]
             [goog.string :as gstring]
             [goog.string.format]
             [atomist.cljs-log :as log]
-            [atomist.sdmprojectmodel :as sdm]
             [cljs-node-io.proc :as proc]
             [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -45,17 +43,15 @@
       library-version - leiningen library version string
 
     returns channel"
-  [project pr-opts library-name library-version]
-  ((sdm/commit-then-PR
-    (fn [p] (go
-             (try
-               (let [f (io/file (. ^js project -baseDir) "project.clj")]
-                 (npm-update project f library-name library-version))
-               :success
-               (catch :default ex
-                 (log/error "failure updating project.clj for dependency change" ex)
-                 :failure))))
-    pr-opts) project))
+  [project library-name library-version]
+  (go
+    (try
+      (let [f (io/file (. ^js project -baseDir) "project.clj")]
+        (npm-update project f library-name library-version))
+      :success
+      (catch :default ex
+        (log/error "failure updating project.clj for dependency change" ex)
+        :failure))))
 
 (defn extract [project]
   (let [f (io/file (. project -baseDir) "package.json")]

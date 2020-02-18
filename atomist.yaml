@@ -41,21 +41,36 @@ skill:
     timeout: 60
 
 commands:
-- name: UpdateNpmDependencies
+- name: ShowNpmDependencies
   description: "summary of the npm dependencies"
-  pattern: "^update-npm-dependencies.*$"
+  pattern: "^npm fingerprints.*$"
+- name: UpdateNpmDependency
+  description: "update one dependency"
+  pattern: "^npm update.*$"
 
 parameters:
-  - string:
-      description: "Npm Library name"
-      displayName: "Npm Library name"
-      name: "name"
+  - singleChoice:
+      description: "Choose a policy for how target dependencies should be discovered by this skill"
+      displayName: "Target Policy"
+      name: "policy"
       required: true
+      options:
+        - description: "Use the latest semver version found within current set of Projects"
+          text: "latest semver used"
+          value: "latestSemVerUsed"
+        - description: "Use the latest dependency available in npmjs.org"
+          text: "latest semver available"
+          value: "latestSemVerAvailable"
+        - description: "Use the set of npm dependencies configured manually in this Skill"
+          text: "manual"
+          value: "manualConfiguration"
   - string:
-      description: "Npm library version"
-      displayName: "Npm Library version"
-      name: "version"
-      required: true
+      description: "Manually Configured set of Npm dependencies"
+      displayName: "application/json map of dependencies - these are only updated if they already exist in a project"
+      name: "dependencies"
+      lineStyle: "multiple"
+      placeHolder: "{\"library\": \"0.1.0\"}"
+      required: false
   - repoFilter:
       description: "The set of Repositories for this String Replace rule."
       displayName: "Repository Scope"
