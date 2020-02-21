@@ -106,7 +106,7 @@
    (fn [request]
      (cond
        ;; handle Push events
-       (= :Push (:data request))
+       (contains? (:data request) :Push)
        (handle-push-event request)
        ;; handle Commit Fingeprint Impact events
        (= :CommitFingerprintImpact (:data request))
@@ -116,4 +116,7 @@
        (command-handler request)
 
        (= "UpdateNpmDependency" (:command request))
-       (update-command-handler request)))))
+       (update-command-handler request)
+
+       :else
+       (api/finish request :failure "did not recognize this event")))))

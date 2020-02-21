@@ -46,7 +46,7 @@
   [project library-name library-version]
   (go
     (try
-      (let [f (io/file (. ^js project -baseDir) "project.clj")]
+      (let [f (io/file (. ^js project -baseDir) "package.json")]
         (npm-update project f library-name library-version))
       :success
       (catch :default ex
