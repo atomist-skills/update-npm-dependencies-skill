@@ -6,6 +6,7 @@
             [atomist.api :as api]
             [atomist.npm :as npm]
             [atomist.deps :as deps]
+            [atomist.json :as json]
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -41,12 +42,15 @@
 
 (defn set-up-target-configuration [handler]
   (fn [request]
-    (log/infof "set up target dependency to converge on [%s]" (:dependency request))
-    (handler (assoc request
-               :configurations [{:parameters [{:name "policy"
-                                               :value "manualConfiguration"}
-                                              {:name "dependencies"
-                                               :value (gstring/format "[%s]" (:dependency request))}]}]))))
+    (log/infof "set up target dependency to converge on %s" (:dependency request))
+    (let [d (json/->obj (:dependency request) :keywordize-keys false)
+          dependencies (gstring/format "[%s %s]" (-> d keys first) (-> d vals first))]
+      (log/info "use dependency " dependencies)
+      (handler (assoc request
+                 :configurations [{:parameters [{:name "policy"
+                                                 :value "manualConfiguration"}
+                                                {:name "dependencies"
+                                                 :value dependencies}]}])))))
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]
@@ -58,6 +62,7 @@
   ((-> (api/finished :message "handling Push" :success "Successfully handled Push")
        (api/send-fingerprints)
        (api/run-sdm-project-callback compute-fingerprints)
+       (npm/validate-npm-policy)
        (api/extract-github-token)
        (api/create-ref-from-push-event)) request))
 
@@ -86,6 +91,7 @@
        (api/create-ref-from-first-linked-repo)
        (api/extract-linked-repos)
        (api/extract-github-user-token)
+       (npm/validate-dependency)
        (api/check-required-parameters {:name "dependency"
                                        :required true
                                        :pattern ".*"

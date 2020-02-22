@@ -70,10 +70,10 @@ parameters:
       displayName: "application/json map of dependencies - these are only updated if they already exist in a project"
       name: "dependencies"
       lineStyle: "multiple"
-      placeHolder: "{\"library\": \"0.1.0\"}"
+      placeHolder: "{\"library\": \"0.1.0\", ...} or [\"library\", ...] for latest policies"
       required: false
   - repoFilter:
-      description: "The set of Repositories for this String Replace rule."
+      description: "The set of Repositories for this rule."
       displayName: "Repository Scope"
       name: "scope"
       required: false

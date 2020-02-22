@@ -2,6 +2,7 @@
   (:require [clojure.string :as s]
             [atomist.sha :as sha]
             [atomist.json :as json]
+            [atomist.api :as api]
             [cljs-node-io.core :as io]
             [cljs-node-io.fs :as fs]
             [goog.string :as gstring]
@@ -10,6 +11,23 @@
             [cljs-node-io.proc :as proc]
             [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
+
+(defn validate-dependency [handler]
+  (fn [request]
+    (if-let [dependency (:dependency request)]
+      (try
+        (let [d (json/->obj dependency :keywordize-keys false)]
+          (if (and (->> (keys d) (every? string?))
+                   (->> (vals d) (every? string?)))
+            (handler request)
+            (api/finish request :failure (gstring/format "%s is not a valid maven coordinate" dependency))))
+        (catch :default ex
+          (api/finish request :failure (gstring/format "%s is not a valid npm dependency formatted JSON doc" dependency))))
+      (api/finish request :failure "this request requires a dependency to be configured"))))
+
+(defn validate-npm-policy [handler]
+  (fn [request]
+    (handler request)))
 
 (defn- deconstruct-name [s]
   (if-let [[_ owner lib] (re-find #"^([^:]+)(::.*)?$" s)]
