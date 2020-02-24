@@ -9,10 +9,13 @@
             [goog.string.format]
             [atomist.cljs-log :as log]
             [cljs-node-io.proc :as proc]
-            [cljs.core.async :refer [<!]])
+            [cljs.core.async :refer [<!]]
+            [atomist.deps :as deps])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn validate-dependency [handler]
+(defn validate-dependency
+  "dependency from a user should be a proper application/json map with string values"
+  [handler]
   (fn [request]
     (if-let [dependency (:dependency request)]
       (try
@@ -25,9 +28,49 @@
           (api/finish request :failure (gstring/format "%s is not a valid npm dependency formatted JSON doc" dependency))))
       (api/finish request :failure "this request requires a dependency to be configured"))))
 
-(defn validate-npm-policy [handler]
+(defn update-dependency
+  "transform the dependencies parameter in a configuration from application/json to the edn format"
+  [configuration]
+  (letfn [(json->edn [s]
+            (->> (try
+                   (json/->obj s :keywordize-keys false)
+                   (catch :default ex
+                     (throw (ex-info "dependencies configuration was not valid JSON"
+                                     {:policy "manualconfiguration"
+                                      :message (gstring/format "bad JSON:  %s" s)}))))
+                 (map (fn [[k v]] [(str k) (str v)]))
+                 (into [])
+                 (pr-str)))]
+    (update configuration :parameters (fn [parameters]
+                                        (->> parameters
+                                             (map #(if (= "dependencies" (:name %))
+                                                     (update % :value json->edn)
+                                                     %)))))))
+
+(defn validate-npm-policy
+  "validate npm dependency configuration
+    all configurations with a policy=manualConfiguration should have a dependency which is an application/json map
+    all configurations with other policies use a dependency which is an array of strings"
+  [handler]
   (fn [request]
-    (handler request)))
+
+    (try
+      (let [configurations (->> (:configurations request)
+                                (map #(if (= "manualConfiguration" (deps/policy-type %))
+                                        (update-dependency %)
+                                        %))
+                                (map deps/validate-policy))]
+        (if (->> configurations
+                 (filter :error)
+                 (empty?))
+          (handler (assoc request :configurations configurations))
+          (api/finish request :failure (->> configurations
+                                            (map :error)
+                                            (interpose ",")
+                                            (apply str)))))
+      (catch :default ex
+        (log/error ex)
+        (api/finish request :failure (-> (ex-data ex) :message))))))
 
 (defn- deconstruct-name [s]
   (if-let [[_ owner lib] (re-find #"^([^:]+)(::.*)?$" s)]
@@ -63,13 +106,13 @@
     returns channel"
   [project library-name library-version]
   (go
-    (try
-      (let [f (io/file (. ^js project -baseDir) "package.json")]
-        (npm-update project f library-name library-version))
-      :success
-      (catch :default ex
-        (log/error "failure updating project.clj for dependency change" ex)
-        :failure))))
+   (try
+     (let [f (io/file (. ^js project -baseDir) "package.json")]
+       (npm-update project f library-name library-version))
+     :success
+     (catch :default ex
+       (log/error "failure updating project.clj for dependency change" ex)
+       :failure))))
 
 (defn extract [project]
   (let [f (io/file (. project -baseDir) "package.json")]

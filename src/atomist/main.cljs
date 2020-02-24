@@ -40,17 +40,22 @@
        {:error ex
         :message "unable to compute npm fingerprints"}))))
 
-(defn set-up-target-configuration [handler]
+(defn set-up-target-configuration
+  ""
+  [handler]
   (fn [request]
     (log/infof "set up target dependency to converge on %s" (:dependency request))
-    (let [d (json/->obj (:dependency request) :keywordize-keys false)
-          dependencies (gstring/format "[%s %s]" (-> d keys first) (-> d vals first))]
-      (log/info "use dependency " dependencies)
-      (handler (assoc request
-                 :configurations [{:parameters [{:name "policy"
-                                                 :value "manualConfiguration"}
-                                                {:name "dependencies"
-                                                 :value dependencies}]}])))))
+    (try
+      (let [d (json/->obj (:dependency request) :keywordize-keys false)
+            dependencies (gstring/format "[[\"%s\" \"%s\"]]" (-> d keys first) (-> d vals first))]
+        (log/info "use dependency " dependencies)
+        (handler (assoc request
+                   :configurations [{:parameters [{:name "policy"
+                                                   :value "manualConfiguration"}
+                                                  {:name "dependencies"
+                                                   :value dependencies}]}])))
+      (catch :default ex
+        (api/finish request :failure (gstring/format "%s was not a valid target dependency" (:dependency request)))))))
 
 (defn check-for-targets-to-apply [handler]
   (fn [request]
@@ -95,7 +100,7 @@
        (api/check-required-parameters {:name "dependency"
                                        :required true
                                        :pattern ".*"
-                                       :validInput "lib version"})
+                                       :validInput "{lib: version}"})
        (api/extract-cli-parameters [[nil "--dependency dependency" "[lib version]"]])
        (api/set-message-id)) (assoc request :branch "master")))
 
