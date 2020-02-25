@@ -72,12 +72,6 @@
         (log/error ex)
         (api/finish request :failure (-> (ex-data ex) :message))))))
 
-(defn- deconstruct-name [s]
-  (if-let [[_ owner lib] (re-find #"^([^:]+)(::.*)?$" s)]
-    (if (not lib)
-      owner
-      (gstring/format "@%s/%s" owner (s/replace lib "::" "")))))
-
 (defn npm-update
   [project f n v]
   (go
