@@ -66,6 +66,7 @@
   [data sendreponse]
   (deps/deps-handler data sendreponse
                      ["ShowNpmDependencies" just-fingerprints]
+                     ["SyncNpmDependency"]
                      ["UpdateNpmDependency" compute-fingerprints
                       (api/compose-middleware
                        [set-up-target-configuration]

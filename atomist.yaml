@@ -17,7 +17,7 @@
 skill:
   name: "atomist/update-npm-dependencies"
   title: Update NPM Dependencies
-  version: 0.1.9
+  version: 0.1.10
   author: Atomist
   description: Automatically update dependencies based on your own policy
   long_description: |
@@ -48,6 +48,9 @@ commands:
 - name: UpdateNpmDependency
   description: "update one dependency"
   pattern: "^npm update.*$"
+- name: SyncNpmDependency
+  description: "sync dependencies for one Repository"
+  pattern: "^npm sync.*$"
 
 parameters:
   - singleChoice:
@@ -56,7 +59,7 @@ parameters:
       name: "policy"
       required: true
       options:
-        - description: "Use the latest semver version found within current set of Projects"
+        - description: "Use the latest semver version"
           text: "latest semver used"
           value: "latestSemVerUsed"
         - description: "Use the latest dependency available in npmjs.org"
@@ -66,12 +69,14 @@ parameters:
           text: "manual"
           value: "manualConfiguration"
   - string:
-      description: "Manually Configured set of Npm dependencies"
-      displayName: "application/json map of dependencies - these are only updated if they already exist in a project"
+      description: |
+        The `manual` policy requires an application/json formatted map of dependencies.
+        The two `latest` policies require an application/json formatted array of Strings, which must refer to npm dependencies
+      displayName: "Policy Configuration"
       name: "dependencies"
       lineStyle: "multiple"
       placeHolder: "{\"library\": \"0.1.0\", ...} or [\"library\", ...] for latest policies"
-      required: false
+      required: true
   - repoFilter:
       description: "The set of Repositories for this rule."
       displayName: "Repository Scope"
