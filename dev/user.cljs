@@ -34,6 +34,7 @@
                             :extensions {:team_id "AK748NQC5"}}
                        (fn [& args] (log/info "sendreponse " args)))
 
+
  (atomist.main/handler #js {:command "UpdateNpmDependency"
                             :source {:slack {:channel {:id "CUCEERLBH"}
                                              :user {:id "UDF0NFB5M"}}}
