@@ -17,7 +17,7 @@
 skill:
   name: "atomist/update-npm-dependencies"
   title: Update NPM Dependencies
-  version: 0.1.11
+  version: 0.1.12
   author: Atomist
   description: Automatically update dependencies based on your own policy
   long_description: |
