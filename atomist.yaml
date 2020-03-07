@@ -76,7 +76,7 @@ parameters:
       name: "dependencies"
       lineStyle: "multiple"
       placeHolder: "{\"library\": \"0.1.0\", ...} or [\"library\", ...] for latest policies"
-      required: true
+      required: false
   - repoFilter:
       description: "The set of Repositories for this rule."
       displayName: "Repository Scope"
