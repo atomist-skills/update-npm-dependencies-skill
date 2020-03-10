@@ -102,7 +102,7 @@
   (go
    (try
      (let [f (io/file (. ^js project -baseDir) "package.json")]
-       (npm-update project f library-name library-version))
+       (<! (npm-update project f library-name library-version)))
      :success
      (catch :default ex
        (log/error "failure updating project.clj for dependency change" ex)
