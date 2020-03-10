@@ -7,6 +7,7 @@
             [atomist.npm :as npm]
             [atomist.deps :as deps]
             [atomist.json :as json]
+            [atomist.config :as config]
             [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -70,10 +71,10 @@
                      ["UpdateNpmDependency" compute-fingerprints
                       (api/compose-middleware
                        [set-up-target-configuration]
-                       [npm/validate-dependency]
+                       [config/validate-dependency]
                        [api/check-required-parameters {:name "dependency"
                                                        :required true
                                                        :pattern ".*"
                                                        :validInput "{lib: version}"}]
                        [api/extract-cli-parameters [[nil "--dependency dependency" "{lib: version}"]]])]
-                     npm/validate-npm-policy))
+                     config/validate-npm-policy))
