@@ -24,18 +24,18 @@
 (defn npm-update
   [project f n v]
   (go
-   (let [baseDir (. ^js project -baseDir)]
-     (io/spit f (s/replace
-                 (io/slurp f)
-                 (re-pattern (gstring/format "\"%s\":\\s*\"(.*)\"" n))
-                 (gstring/format "\"%s\": \"%s\"" n v)))
-     (let [[err stdout stderr] (<! (proc/aexec "npm install" {:cwd baseDir}))]
-       (if (nil? err)
-         :success
-         (do
-           (log/info stdout)
-           (log/error stderr)
-           :failure))))))
+    (let [baseDir (. ^js project -baseDir)]
+      (io/spit f (s/replace
+                  (io/slurp f)
+                  (re-pattern (gstring/format "\"%s\":\\s*\"(.*)\"" n))
+                  (gstring/format "\"%s\": \"%s\"" n v)))
+      (let [[err stdout stderr] (<! (proc/aexec "npm install" {:cwd baseDir}))]
+        (if (nil? err)
+          :success
+          (do
+            (log/info stdout)
+            (log/error stderr)
+            :failure))))))
 
 (defn- apply-library-editor
   "apply a library edit inside of a PR
@@ -49,14 +49,14 @@
     returns channel"
   [project target-fingerprint]
   (go
-   (try
-     (let [f (io/file (. ^js project -baseDir) "package.json")
-           [library-name library-version] (:data target-fingerprint)]
-       (<! (npm-update project f library-name library-version)))
-     :success
-     (catch :default ex
-       (log/error "failure updating project.clj for dependency change" ex)
-       :failure))))
+    (try
+      (let [f (io/file (. ^js project -baseDir) "package.json")
+            [library-name library-version] (:data target-fingerprint)]
+        (<! (npm-update project f library-name library-version)))
+      :success
+      (catch :default ex
+        (log/error "failure updating project.clj for dependency change" ex)
+        :failure))))
 
 (defn extract [project]
   (let [f (io/file (. project -baseDir) "package.json")]
@@ -77,4 +77,4 @@
            :displayType "NPM dependencies"})))))
 
 (comment
- (extract #js {:baseDir "/Users/slim/atomist/atomist-skills/update-npm-dependencies-skill"}))
+  (extract #js {:baseDir "/Users/slim/atomist/atomist-skills/update-npm-dependencies-skill"}))

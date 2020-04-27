@@ -6,14 +6,12 @@
             [atomist.api :as api]
             [atomist.npm :as npm]
             [atomist.deps :as deps]
-            [atomist.json :as json]
             [atomist.config :as config]
-            [goog.string :as gstring]
             [goog.string.format])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn just-fingerprints
-  [request project]
+  [_ project]
   (go
     (try
       (npm/extract project)
@@ -23,45 +21,28 @@
         {:error ex
          :message "unable to compute npm fingerprints"}))))
 
+(def apply-policy (partial deps/apply-policy-targets {:type "npm-project-deps"
+                                                      :apply-library-editor npm/apply-library-editor
+                                                      :->library-version identity
+                                                      :->data identity
+                                                      :->sha npm/data->sha
+                                                      :->name npm/library-name->name}))
+
 (defn compute-fingerprints
   [request project]
   (go
-   (try
-     (let [fingerprints (npm/extract project)]
+    (try
+      (let [fingerprints (npm/extract project)]
        ;; first create PRs for any off target deps
-       (<! (deps/apply-policy-targets
-            (assoc request :project project :fingerprints fingerprints)
-            "npm-project-deps"
-            npm/apply-library-editor
-            identity
-            npm/data->sha
-            identity
-            npm/library-name->name))
+        (<! (apply-policy
+             (assoc request :project project :fingerprints fingerprints)))
        ;; return the fingerprints in a form that they can be added to the graph
-       fingerprints)
-     (catch :default ex
-       (log/error "unable to compute npm fingerprints")
-       (log/error ex)
-       {:error ex
-        :message "unable to compute npm fingerprints"}))))
-
-(defn set-up-target-configuration
-  ""
-  [handler]
-  (fn [request]
-    (go
-      (log/infof "set up target dependency to converge on %s" (:dependency request))
-      (try
-        (let [d (json/->obj (:dependency request) :keywordize-keys false)
-              dependencies (gstring/format "[[\"%s\" \"%s\"]]" (-> d keys first) (-> d vals first))]
-          (log/info "use dependency " dependencies)
-          (<! (handler (assoc request
-                         :configurations [{:parameters [{:name "policy"
-                                                         :value "manualConfiguration"}
-                                                        {:name "dependencies"
-                                                         :value dependencies}]}]))))
-        (catch :default ex
-          (<! (api/finish request :failure (gstring/format "%s was not a valid target dependency" (:dependency request)))))))))
+        fingerprints)
+      (catch :default ex
+        (log/error "unable to compute npm fingerprints")
+        (log/error ex)
+        {:error ex
+         :message "unable to compute npm fingerprints"}))))
 
 (defn ^:export handler
   "handler
@@ -75,7 +56,7 @@
                      ["SyncNpmDependency"]
                      ["UpdateNpmDependency" compute-fingerprints
                       (api/compose-middleware
-                       [set-up-target-configuration]
+                       [config/set-up-target-configuration]
                        [config/validate-dependency]
                        [api/check-required-parameters {:name "dependency"
                                                        :required true
