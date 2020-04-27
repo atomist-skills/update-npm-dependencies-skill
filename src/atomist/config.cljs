@@ -20,7 +20,7 @@
           (api/finish request :failure (gstring/format "%s is not a valid npm dependency formatted JSON doc" dependency))))
       (api/finish request :failure "this request requires a dependency to be configured"))))
 
-(defn update-dependency
+(defn transform-dependency-to-edn-format
   "transform the dependencies parameter in a configuration from application/json to the edn format"
   [configuration]
   (letfn [(json->edn [s]
@@ -49,7 +49,7 @@
     (try
       (let [configurations (->> (:configurations request)
                                 (map #(if (= "manualConfiguration" (deps/policy-type %))
-                                        (update-dependency %)
+                                        (transform-dependency-to-edn-format %)
                                         %))
                                 (map deps/validate-policy))]
         (if (->> configurations

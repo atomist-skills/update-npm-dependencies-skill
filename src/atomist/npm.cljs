@@ -13,6 +13,14 @@
             [atomist.deps :as deps])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+(defn library-name->name [s]
+  (-> s
+      (s/replace-all #"@" "")
+      (s/replace-all #"/" "::")))
+
+(defn data->sha [data]
+  (sha/sha-256 (json/->str data)))
+
 (defn npm-update
   [project f n v]
   (go
@@ -39,10 +47,11 @@
       library-version - leiningen library version string
 
     returns channel"
-  [project library-name library-version]
+  [project target-fingerprint]
   (go
    (try
-     (let [f (io/file (. ^js project -baseDir) "package.json")]
+     (let [f (io/file (. ^js project -baseDir) "package.json")
+           [library-name library-version] (:data target-fingerprint)]
        (<! (npm-update project f library-name library-version)))
      :success
      (catch :default ex
@@ -58,13 +67,11 @@
                              (get json-data "dependencies")
                              (get json-data "devDependencies")) :let [data [lib version]]]
           {:type "npm-project-deps"
-           :name (-> lib
-                     (s/replace-all #"@" "")
-                     (s/replace-all #"/" "::"))
+           :name (library-name->name lib)
            :abbreviation "npmdeps"
            :version "0.0.1"
            :data data
-           :sha (sha/sha-256 (json/->str data))
+           :sha (data->sha data)
            :displayName lib
            :displayValue (nth data 1)
            :displayType "NPM dependencies"})))))

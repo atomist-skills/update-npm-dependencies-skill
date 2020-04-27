@@ -32,7 +32,11 @@
        (<! (deps/apply-policy-targets
             (assoc request :project project :fingerprints fingerprints)
             "npm-project-deps"
-            npm/apply-library-editor))
+            npm/apply-library-editor
+            identity
+            npm/data->sha
+            identity
+            npm/library-name->name))
        ;; return the fingerprints in a form that they can be added to the graph
        fingerprints)
      (catch :default ex
@@ -45,18 +49,19 @@
   ""
   [handler]
   (fn [request]
-    (log/infof "set up target dependency to converge on %s" (:dependency request))
-    (try
-      (let [d (json/->obj (:dependency request) :keywordize-keys false)
-            dependencies (gstring/format "[[\"%s\" \"%s\"]]" (-> d keys first) (-> d vals first))]
-        (log/info "use dependency " dependencies)
-        (handler (assoc request
-                   :configurations [{:parameters [{:name "policy"
-                                                   :value "manualConfiguration"}
-                                                  {:name "dependencies"
-                                                   :value dependencies}]}])))
-      (catch :default ex
-        (api/finish request :failure (gstring/format "%s was not a valid target dependency" (:dependency request)))))))
+    (go
+      (log/infof "set up target dependency to converge on %s" (:dependency request))
+      (try
+        (let [d (json/->obj (:dependency request) :keywordize-keys false)
+              dependencies (gstring/format "[[\"%s\" \"%s\"]]" (-> d keys first) (-> d vals first))]
+          (log/info "use dependency " dependencies)
+          (<! (handler (assoc request
+                         :configurations [{:parameters [{:name "policy"
+                                                         :value "manualConfiguration"}
+                                                        {:name "dependencies"
+                                                         :value dependencies}]}]))))
+        (catch :default ex
+          (<! (api/finish request :failure (gstring/format "%s was not a valid target dependency" (:dependency request)))))))))
 
 (defn ^:export handler
   "handler
