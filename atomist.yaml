@@ -1,83 +1,66 @@
-#
-#  Copyright © 2019 Atomist, Inc.
-#
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
-#
-
 skill:
-  name: "atomist/update-npm-dependencies"
-  title: Update NPM Dependencies
-  author: Atomist
   description: Automatically update dependencies based on your own policy
+  category:
+    - DEPENDENCIES
+    - DEV_EX
+  package:
+    use: atomist/package-cljs-skill
+  repository: 'https://github.com/atomist-skills/update-leiningen-dependencies'
+  license: Apache-2.0
+  homepage: 'https://github.com/atomist-skills/update-leiningen-dependencies'
+  name: atomist/update-npm-dependencies
   long_description: |
     Track all versions of npm dependencies and allow users to set
     cross repo targets for dependency versions.
-  category:
-  - DEPENDENCIES
-  - DEV_EX
-  license: Apache-2.0
-  homepage: https://github.com/atomist-skills/update-leiningen-dependencies
-  repository: https://github.com/atomist-skills/update-leiningen-dependencies
-  icon: https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/npm-512.png
+  icon: 'https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/npm-512.png'
+  title: Update NPM Dependencies
+  author: Atomist
   dispatch: single
-
-  package:
-    use: 'atomist/package-cljs-skill'
-
   runtime:
     name: nodejs10
     entry_point: eventhandler
     memory: 512
     timeout: 60
-
 commands:
-- name: ShowNpmDependencies
-  description: "summary of the npm dependencies"
-  pattern: "^npm fingerprints.*$"
-- name: UpdateNpmDependency
-  description: "update one dependency"
-  pattern: "^npm update.*$"
-- name: SyncNpmDependency
-  description: "sync dependencies for one Repository"
-  pattern: "^npm sync.*$"
-
+  - name: ShowNpmDependencies
+    description: summary of the npm dependencies
+    pattern: ^npm fingerprints.*$
+  - name: UpdateNpmDependency
+    description: update one dependency
+    pattern: ^npm update.*$
+  - name: SyncNpmDependency
+    description: sync dependencies for one Repository
+    pattern: ^npm sync.*$
 parameters:
   - singleChoice:
-      description: "Choose how to select the target version"
-      displayName: "Use Version"
-      name: "policy"
+      description: Choose how to select the target version
+      displayName: Use Version
+      name: policy
       required: false
       options:
-        - description: "Choose using the latest version used in a Repository on this team"
-          text: "latest used"
-          value: "latestSemVerUsed"
-        - description: "Use the latest version available at npmjs.org"
-          text: "latest available"
-          value: "latestSemVerAvailable"
-        - description: "Use a specific target version set here in this configuration"
-          text: "manual"
-          value: "manualConfiguration"
+        - description: Choose using the latest version used in a Repository on this team
+          text: latest used
+          value: latestSemVerUsed
+        - description: Use the latest version available at npmjs.org
+          text: latest available
+          value: latestSemVerAvailable
+        - description: Use a specific target version set here in this configuration
+          text: manual
+          value: manualConfiguration
   - string:
-      description: |
-        The `manual` policy requires an application/json formatted map of dependencies.
-        The two `latest` policies require an application/json formatted array of Strings, which must refer to npm dependencies
-      displayName: "Policy Configuration"
-      name: "dependencies"
-      lineStyle: "multiple"
-      placeHolder: "{\"library\": \"0.1.0\", ...} or [\"library\", ...] for latest policies"
+      description: >
+        The `manual` policy requires an application/json formatted map of
+        dependencies.
+
+        The two `latest` policies require an application/json formatted array of
+        Strings, which must refer to npm dependencies
+      displayName: Policy Configuration
+      name: dependencies
+      lineStyle: multiple
+      placeHolder: '{"library": "0.1.0", ...} or ["library", ...] for latest policies'
       required: false
   - repoFilter:
-      description: "The set of Repositories that should use this policy."
-      displayName: "Repository Scope"
-      name: "scope"
+      description: The set of Repositories that should use this policy.
+      displayName: Repository Scope
+      name: scope
       required: false
