@@ -19,8 +19,19 @@ skill:
   runtime:
     name: nodejs10
     entry_point: eventhandler
-    memory: 512
-    timeout: 60
+    memory: 1024
+    timeout: 240
+resource_providers:
+  - name: github
+    description: GitHub
+    type_name: GitHubAppResourceProvider
+    min_required: 1
+    max_allowed: 1
+  - name: slack
+    description: Slack
+    type_name: SlackResourceProvider
+    min_required: 0
+    max_allowed: 1
 commands:
   - name: ShowNpmDependencies
     description: summary of the npm dependencies
@@ -34,7 +45,7 @@ commands:
 parameters:
   - singleChoice:
       description: Choose how to select the target version
-      displayName: Use Version
+      displayName: Target Version
       name: policy
       required: false
       options:
