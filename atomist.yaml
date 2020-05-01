@@ -53,18 +53,18 @@ commands:
 
 parameters:
   - singleChoice:
-      description: "Choose a policy for how target dependencies should be discovered by this skill"
-      displayName: "Target Policy"
+      description: "Choose how to select the target version"
+      displayName: "Use Version"
       name: "policy"
-      required: true
+      required: false
       options:
-        - description: "Use the latest semver version"
-          text: "latest semver used"
+        - description: "Choose using the latest version used in a Repository on this team"
+          text: "latest used"
           value: "latestSemVerUsed"
-        - description: "Use the latest dependency available in npmjs.org"
-          text: "latest semver available"
+        - description: "Use the latest version available at npmjs.org"
+          text: "latest available"
           value: "latestSemVerAvailable"
-        - description: "Use the set of npm dependencies configured manually in this Skill"
+        - description: "Use a specific target version set here in this configuration"
           text: "manual"
           value: "manualConfiguration"
   - string:
@@ -77,7 +77,7 @@ parameters:
       placeHolder: "{\"library\": \"0.1.0\", ...} or [\"library\", ...] for latest policies"
       required: false
   - repoFilter:
-      description: "The set of Repositories for this rule."
+      description: "The set of Repositories that should use this policy."
       displayName: "Repository Scope"
       name: "scope"
       required: false
