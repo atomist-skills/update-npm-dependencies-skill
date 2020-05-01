@@ -51,7 +51,7 @@ Instead of having to update a manual configuration, choosing `latest available` 
 you specify the names of libraries that should conform to this policy.  For this, we use an `application/json` encoded 
 string array like `["libraryA", "libraryB"]`.
 
-~[screenshot2](docs/image/screenshot2.png)
+![screenshot2](docs/image/screenshot2.png)
 
 As with many Atomist skills, this skill has a `RepoFilter`.  So you can start by applying the skill to a few projects 
 and then let it evolve to a best practice that you share.  This skill is particularly well suited to being applied to
