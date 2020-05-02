@@ -33,10 +33,10 @@
   (go
     (try
       (let [fingerprints (npm/extract (:project request))]
-       ;; first create PRs for any off target deps
+        ;; first create PRs for any off target deps
         (<! (apply-policy
              (assoc request :fingerprints fingerprints)))
-       ;; return the fingerprints in a form that they can be added to the graph
+        ;; return the fingerprints in a form that they can be added to the graph
         fingerprints)
       (catch :default ex
         (log/error "unable to compute npm fingerprints")
@@ -64,6 +64,6 @@
                                                        :pattern ".*"
                                                        :validInput "{lib: version}"}]
                        [api/extract-cli-parameters [[nil "--dependency dependency" "{lib: version}"]]])]
-                     compute-fingerprints
                      just-fingerprints
+                     compute-fingerprints
                      config/validate-npm-policy))
