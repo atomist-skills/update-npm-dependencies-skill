@@ -50,21 +50,21 @@ parameters:
       required: false
       options:
         - description: Choose using the latest version used in a Repository on this team
-          text: latest used
+          text: Latest used
           value: latestSemVerUsed
         - description: Use the latest version available at npmjs.org
-          text: latest available
+          text: Latest available
           value: latestSemVerAvailable
         - description: Use a specific target version set here in this configuration
-          text: manual
+          text: Manual
           value: manualConfiguration
   - string:
       description: >
-        The `manual` policy requires an application/json formatted map of
+        The `Manual` policy requires an application/json formatted map of
         dependencies.
 
-        The two `latest` policies require an application/json formatted array of
-        Strings, which must refer to npm dependencies
+        The two `Latest` policies require an application/json formatted array of
+        Strings, which must refer to npm dependencies.
       displayName: Policy Configuration
       name: dependencies
       lineStyle: multiple
