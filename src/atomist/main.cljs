@@ -67,3 +67,36 @@
                      just-fingerprints
                      compute-fingerprints
                      config/validate-npm-policy))
+
+(comment
+ (enable-console-print!)
+ (atomist.main/handler #js {:command "ShowNpmDependencies"
+                            :source {:slack {:channel {:id "C012WB9MCCB"}
+                                             :user {:id "U2ATJPCSK"}
+                                             :team {:id "T29E48P34"}}}
+                            :correlation_id "corrid"
+                            :api_version "1"
+                            :team {:id "T29E48P34"}
+                            :configurations [{:name "test"
+                                              :enabled true
+                                              :parameters [{:name "policy" :value "manualConfiguration"}
+                                                           {:name "dependencies" :value "{\"@google-cloud/pubsub\": \"1.7.2\"}"}]}]
+                            :raw_message "npm fingerprints"
+                            :secrets [{:uri "atomist://api-key" :value (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_PROD_GITHUB_AUTH)}]}
+                       (fn [& args]
+                         (go (cljs.pprint/pprint (first args)))))
+ (atomist.main/handler #js {:command "SyncNpmDependency"
+                            :source {:slack {:channel {:id "C012WB9MCCB"}
+                                             :user {:id "U2ATJPCSK"}
+                                             :team {:id "T29E48P34"}}}
+                            :correlation_id "corrid"
+                            :api_version "1"
+                            :team {:id "T29E48P34"}
+                            :configurations [{:name "test"
+                                              :enabled true
+                                              :parameters [{:name "policy" :value "manualConfiguration"}
+                                                           {:name "dependencies" :value "{\"@google-cloud/pubsub\": \"1.7.2\"}"}]}]
+                            :raw_message "npm sync"
+                            :secrets [{:uri "atomist://api-key" :value (.. js/process -env -API_KEY_SLIMSLENDERSLACKS_PROD_GITHUB_AUTH)}]}
+                       (fn [& args]
+                         (go (cljs.pprint/pprint (first args))))))
