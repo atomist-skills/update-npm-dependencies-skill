@@ -11,10 +11,10 @@
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn just-fingerprints
-  [_ project]
+  [request]
   (go
     (try
-      (npm/extract project)
+      (npm/extract (:project request))
       (catch :default ex
         (log/error "unable to compute npm fingerprints")
         (log/error ex)
@@ -29,13 +29,13 @@
                                                       :->name npm/library-name->name}))
 
 (defn compute-fingerprints
-  [request project]
+  [request]
   (go
     (try
-      (let [fingerprints (npm/extract project)]
+      (let [fingerprints (npm/extract (:project request))]
        ;; first create PRs for any off target deps
         (<! (apply-policy
-             (assoc request :project project :fingerprints fingerprints)))
+             (assoc request :fingerprints fingerprints)))
        ;; return the fingerprints in a form that they can be added to the graph
         fingerprints)
       (catch :default ex
@@ -51,10 +51,11 @@
       data - Incoming Request #js object
       sendreponse - callback ([obj]) puts an outgoing message on the response topic"
   [data sendreponse]
-  (deps/deps-handler data sendreponse
-                     ["ShowNpmDependencies" just-fingerprints]
+  (deps/deps-handler data
+                     sendreponse
+                     ["ShowNpmDependencies"]
                      ["SyncNpmDependency"]
-                     ["UpdateNpmDependency" compute-fingerprints
+                     ["UpdateNpmDependency"
                       (api/compose-middleware
                        [config/set-up-target-configuration]
                        [config/validate-dependency]
@@ -63,4 +64,6 @@
                                                        :pattern ".*"
                                                        :validInput "{lib: version}"}]
                        [api/extract-cli-parameters [[nil "--dependency dependency" "{lib: version}"]]])]
+                     compute-fingerprints
+                     just-fingerprints
                      config/validate-npm-policy))

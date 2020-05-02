@@ -56,17 +56,18 @@ The other two policies require only the names of the libraries that should be ke
     Subsequent Pushes will trigger Pull Requests for npm libraries that are off-target.
     
     ![screenshot3](docs/images/screenshot3.png)
+   
 
 4.  **Run a version sync from Slack**
 
     Interactively check that a Repo is in sync with current policies. 
-
-    ![screenshot4](docs/images/screenshot4.png)
     
     ```
     @atomist npm sync
     @atomist npm sync --slug=org/repo
     ```
+
+    ![screenshot4](docs/images/screenshot4.png)
     
     (you do not need to specify a `--slug` parameter if your Slack channel is linked to a Repo)
     
