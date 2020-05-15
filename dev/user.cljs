@@ -7,6 +7,13 @@
 (set-env :prod-github-auth)
 
 (comment
+  (-> (fake-push "AEIB5886C" "slimslender" "nextjs-blog" "master")
+      (assoc :configurations [{:name "follow the leader"
+                               :parameters [{:name "policy" :value "manualConfiguration"}
+                                            {:name "dependencies" :value "{\"react\": \"16.13.1\"}"}]}
+                              {:name "Update NPM Dependencies"
+                               :parameters [{:name "scope" :value "{}"}]}])
+      (call-event-handler atomist.main/handler))
  ;; this should fail with a bad JSON
   (-> (fake-push "AK748NQC5" "atomisthqa" "express-test-0" "master")
       (assoc :configurations [{:parameters [{:name "policy" :value "manualConfiguration"}

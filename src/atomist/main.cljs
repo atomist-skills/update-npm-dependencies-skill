@@ -1,13 +1,11 @@
 (ns atomist.main
-  (:require [cljs.pprint :refer [pprint]]
-            [cljs.core.async :refer [<! >! timeout chan]]
+  (:require [cljs.core.async :refer [<!]]
             [goog.string.format]
             [atomist.cljs-log :as log]
             [atomist.api :as api]
             [atomist.npm :as npm]
             [atomist.deps :as deps]
-            [atomist.config :as config]
-            [goog.string.format])
+            [atomist.config :as config])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn just-fingerprints
