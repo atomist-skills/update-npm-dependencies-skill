@@ -3,6 +3,6 @@
 
 (def module-name "update-npm-dependencies-skill")
 (def path ".")
-(def version "0.3.1")
-(def tag "v0.3.1")
-(def generated-at "2020-05-15T21:27:47Z")
+(def version "0.3.2")
+(def tag "v0.3.2")
+(def generated-at "2020-05-15T23:51:25Z")
