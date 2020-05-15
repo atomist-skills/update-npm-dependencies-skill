@@ -13,6 +13,7 @@
                                             {:name "dependencies" :value "{express \"4.1.2\"}"}]}])
       (call-event-handler atomist.main/handler))
 
+ ;; bot should ask user to authorize
   (-> (fake-command-handler "AK748NQC5" "UpdateNpmDependency" "npm update" "CUCEERLBH" "UDF0NFB5M")
       (assoc :parameters [{:name "dependency"
                            :value "{\"express\": \"4.1.2\"}"}])

@@ -2,15 +2,12 @@
   (:require [clojure.string :as s]
             [atomist.sha :as sha]
             [atomist.json :as json]
-            [atomist.api :as api]
             [cljs-node-io.core :as io]
-            [cljs-node-io.fs :as fs]
             [goog.string :as gstring]
             [goog.string.format]
             [atomist.cljs-log :as log]
             [cljs-node-io.proc :as proc]
-            [cljs.core.async :refer [<!]]
-            [atomist.deps :as deps])
+            [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn library-name->name [s]
@@ -24,7 +21,7 @@
 (defn npm-update
   [project f n v]
   (go
-    (let [baseDir (. ^js project -baseDir)]
+    (let [baseDir (:path project)]
       (io/spit f (s/replace
                   (io/slurp f)
                   (re-pattern (gstring/format "\"%s\":\\s*\"(.*)\"" n))
@@ -50,7 +47,7 @@
   [project target-fingerprint]
   (go
     (try
-      (let [f (io/file (. ^js project -baseDir) "package.json")
+      (let [f (io/file (:path project) "package.json")
             [library-name library-version] (:data target-fingerprint)]
         (<! (npm-update project f library-name library-version)))
       :success
@@ -59,8 +56,8 @@
         :failure))))
 
 (defn extract [project]
-  (let [f (io/file (. project -baseDir) "package.json")]
-    (when (fs/fexists? (.getPath f))
+  (let [f (io/file (:path project) "package.json")]
+    (when (.exists f)
       (let [json-data (js->clj (.parse js/JSON (io/slurp f)))]
         (for [[lib version] (merge
                              {}
