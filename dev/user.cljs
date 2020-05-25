@@ -1,7 +1,6 @@
 (ns user
   (:require [atomist.main]
-            [atomist.local-runner :refer [set-env call-event-handler fake-push fake-command-handler]]
-            [atomist.cljs-log :as log]))
+            [atomist.local-runner :refer [set-env call-event-handler fake-push fake-command-handler]]))
 
 (enable-console-print!)
 (set-env :prod-github-auth)

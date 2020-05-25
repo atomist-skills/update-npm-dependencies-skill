@@ -1,6 +1,6 @@
 (ns atomist.config
   (:require [goog.string :as gstring]
-            [cljs.core.async :refer [<! >! timeout chan]]
+            [cljs.core.async :refer [<!]]
             [atomist.deps :as deps]
             [atomist.api :as api]
             [atomist.cljs-log :as log]
@@ -19,7 +19,7 @@
                      (->> (vals d) (every? string?)))
               (<! (handler request))
               (<! (api/finish request :failure (gstring/format "%s is not a valid maven coordinate" dependency)))))
-          (catch :default ex
+          (catch :default _
             (<! (api/finish request :failure (gstring/format "%s is not a valid npm dependency formatted JSON doc" dependency)))))
         (<! (api/finish request :failure "this request requires a dependency to be configured"))))))
 
@@ -29,7 +29,7 @@
   (letfn [(json->edn [s]
             (->> (try
                    (json/->obj s :keywordize-keys false)
-                   (catch :default ex
+                   (catch :default _
                      (throw (ex-info "dependencies configuration was not valid JSON"
                                      {:policy "manualconfiguration"
                                       :message (gstring/format "bad JSON:  %s" s)}))))
@@ -82,5 +82,5 @@
                                                               :value "manualConfiguration"}
                                                              {:name "dependencies"
                                                               :value dependencies}]}]))))
-        (catch :default ex
+        (catch :default _
           (<! (api/finish request :failure (gstring/format "%s was not a valid target dependency" (:dependency request)))))))))
