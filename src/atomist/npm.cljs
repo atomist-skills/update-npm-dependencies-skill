@@ -12,8 +12,8 @@
 
 (defn library-name->name [s]
   (-> s
-      (s/replace-all #"@" "")
-      (s/replace-all #"/" "::")))
+      (s/replace #"@" "")
+      (s/replace #"/" "::")))
 
 (defn data->sha [data]
   (sha/sha-256 (json/->str data)))
@@ -34,7 +34,7 @@
             (log/error stderr)
             :failure))))))
 
-(defn- apply-library-editor
+(defn apply-library-editor
   "apply a library edit inside of a PR
 
     params
@@ -56,22 +56,23 @@
         :failure))))
 
 (defn extract [project]
-  (let [f (io/file (:path project) "package.json")]
-    (when (.exists f)
-      (let [json-data (js->clj (.parse js/JSON (io/slurp f)))]
-        (for [[lib version] (merge
-                             {}
-                             (get json-data "dependencies")
-                             (get json-data "devDependencies")) :let [data [lib version]]]
-          {:type "npm-project-deps"
-           :name (library-name->name lib)
-           :abbreviation "npmdeps"
-           :version "0.0.1"
-           :data data
-           :sha (data->sha data)
-           :displayName lib
-           :displayValue (nth data 1)
-           :displayType "NPM dependencies"})))))
+  (go
+    (let [f (io/file (:path project) "package.json")]
+      (when (.exists f)
+        (let [json-data (js->clj (.parse js/JSON (io/slurp f)))]
+          (for [[lib version] (merge
+                               {}
+                               (get json-data "dependencies")
+                               (get json-data "devDependencies")) :let [data [lib version]]]
+            {:type "npm-project-deps"
+             :name (library-name->name lib)
+             :abbreviation "npmdeps"
+             :version "0.0.1"
+             :data data
+             :sha (data->sha data)
+             :displayName lib
+             :displayValue (nth data 1)
+             :displayType "NPM dependencies"}))))))
 
 (comment
   (extract #js {:baseDir "/Users/slim/atomist/atomist-skills/update-npm-dependencies-skill"}))
