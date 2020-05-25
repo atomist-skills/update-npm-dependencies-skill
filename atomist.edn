@@ -1,0 +1,79 @@
+{:skill
+ {:description
+  "Automatically update dependencies based on your own policy",
+  :category ["DEPENDENCIES" "DEV_EX"],
+  :package {:use "atomist/package-cljs-skill"},
+  :repository
+  "https://github.com/atomist-skills/update-npm-dependencies-skill",
+  :license "Apache-2.0",
+  :homepage
+  "https://github.com/atomist-skills/update-npm-dependencies-skill",
+  :name "atomist/update-npm-dependencies",
+  :long_description
+  "Track all versions of npm dependencies and allow users to set\ncross repo targets for dependency versions.\n",
+  :icon
+  "https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/npm-512.png",
+  :title "Update NPM Dependencies",
+  :author "Atomist",
+  :dispatch "single",
+  :runtime
+  {:name "nodejs10",
+   :entry_point "eventhandler",
+   :memory 1024,
+   :timeout 240},
+  :homepageUrl
+  "https://github.com/atomist-skills/update-npm-dependencies-skill"},
+ :resourceProviders
+ [{:name "github",
+   :description "GitHub",
+   :typeName "GitHubAppResourceProvider",
+   :minRequired 1,
+   :maxAllowed 1}
+  {:name "slack",
+   :description "Slack",
+   :typeName "SlackResourceProvider",
+   :minRequired 0,
+   :maxAllowed 1}],
+ :commands
+ [{:name "ShowNpmDependencies",
+   :description "summary of the npm dependencies",
+   :pattern "^npm fingerprints.*$"}
+  {:name "UpdateNpmDependency",
+   :description "update one dependency",
+   :pattern "^npm update.*$"}
+  {:name "SyncNpmDependency",
+   :description "sync dependencies for one Repository",
+   :pattern "^npm sync.*$"}],
+ :parameters
+ [{:singleChoice
+   {:description "Choose how to select the target version",
+    :displayName "Target Version",
+    :name "policy",
+    :required false,
+    :options
+    [{:description
+      "Choose using the latest version used in a Repository on this team",
+      :text "Latest used",
+      :value "latestSemVerUsed"}
+     {:description "Use the latest version available at npmjs.org",
+      :text "Latest available",
+      :value "latestSemVerAvailable"}
+     {:description
+      "Use a specific target version set here in this configuration",
+      :text "Manual",
+      :value "manualConfiguration"}]}}
+  {:string
+   {:description
+    "The `Manual` policy requires an application/json formatted map of dependencies.\nThe two `Latest` policies require an application/json formatted array of Strings, which must refer to npm dependencies.\n",
+    :displayName "Policy Configuration",
+    :name "dependencies",
+    :lineStyle "multiple",
+    :placeHolder
+    "{\"library\": \"0.1.0\", ...} or [\"library\", ...] for latest policies",
+    :required false}}
+  {:repoFilter
+   {:description
+    "The set of Repositories that should use this policy.",
+    :displayName "Repository Scope", 
+    :name "scope", 
+    :required false}}]}
