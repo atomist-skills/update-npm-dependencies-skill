@@ -1,5 +1,5 @@
 skill:
-  description: Track versions andkeep your NPM dependencies up to date
+  description: Track versions and keep your NPM dependencies up to date
   category:
     - DEPENDENCIES
     - DEV_EX
