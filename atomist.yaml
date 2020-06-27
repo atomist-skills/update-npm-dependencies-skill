@@ -1,5 +1,5 @@
 skill:
-  description: Automatically update dependencies based on your own policy
+  description: Track versions andkeep your NPM dependencies up to date
   category:
     - DEPENDENCIES
     - DEV_EX
