@@ -1,7 +1,6 @@
 {:description
  "Track versions and keep your NPM dependencies up to date",
  :category ["DEPENDENCIES" "SECURITY"],
- :package {:use "atomist/package-cljs-skill"},
  :repository
  "https://github.com/atomist-skills/update-npm-dependencies-skill",
  :license "Apache-2.0",
@@ -19,7 +18,7 @@
  :homepage
  "https://github.com/atomist-skills/update-npm-dependencies-skill",
  :displayName "update npm dependencies skill",
- :name "atomist/update-npm-dependencies",
+ :name "update-npm-dependencies",
  :long_description
  "Track all versions of npm dependencies and allow users to set\ncross repo targets for dependency versions.\n",
  :icon
