@@ -7,12 +7,12 @@ Keep track of all versions of npm dependencies found within `package.json` files
 # What it's useful for
 
 Track all the different versions of npm library references in `package.json` files across your repositories.  
-Automatically raise pull requests when a version does not conform to a selected target version.  Choose
+Automatically raise pull requests when a version does not conform to a selected target version. Choose
 from three different targets:
 
-*  **Latest Used** - select the latest version found in one of your repositories
-*  **Latest Available** - select the latest version found at [npmjs.com](https://npmjs.com)
-*  **Manual** - manually select a target version in a skill configuration
+-   **Latest Used** - select the latest version found in one of your repositories
+-   **Latest Available** - select the latest version found at [npmjs.com](https://npmjs.com)
+-   **Manual** - manually select a target version in a skill configuration
 
 # Before you get started
 
@@ -27,12 +27,12 @@ When the optional Slack integration is enabled, users can interact with this ski
 
 # How to configure
 
-You can enable this skill without configuring any target versions.  In this mode, the skill will collect
-data about your library versions, but will take no action.  Simply select the set of
-repositories that should be scanned.    
+You can enable this skill without configuring any target versions. In this mode, the skill will collect
+data about your library versions, but will take no action. Simply select the set of
+repositories that should be scanned.
 
-1. **Select dependency target policy, optional policy configuration** 
-    
+1. **Select dependency target policy, optional policy configuration**
+
     A `Manual` policy requires that you specify both the library and the version.
 
     ![screenshot1](docs/images/screenshot1.png)
@@ -47,22 +47,21 @@ repositories that should be scanned.
 
     By default, this skill will be enabled for all repositories in all organizations you have connected.
 
-    To restrict the organizations or specific repositories on which the skill will run, you can explicitly choose 
+    To restrict the organizations or specific repositories on which the skill will run, you can explicitly choose
     organization(s) and repositories.
 
 ## How to use Update NPM Dependencies
 
-1.  **Configure the skill, add a target policy and select repositories to scan for `package.json` files** 
+1.  **Configure the skill, add a target policy and select repositories to scan for `package.json` files**
 
     The skill will run on any new pushes to selected repositories.
     and will raise pull requests for npm libraries that are not on the target.
-    
+
     ![screenshot3](docs/images/screenshot3.png)
-   
 
-2.  **Run a version sync from Slack**
+2)  **Run a version sync from Slack**
 
-    Interactively check that a repository is in sync with current policies. 
+    Interactively check that a repository is in sync with current policies.
 
     ```
     @atomist npm sync
@@ -72,11 +71,10 @@ repositories that should be scanned.
     (you do not need to specify a `--slug` parameter if your Slack channel is linked to a repository)
 
     ![screenshot4](docs/images/screenshot4.png)
-    
-    
+
     This is useful when you want to raise a pull request without having to wait for a push to occur.
 
-3.  ** Enjoy an easier way to keep your dependencies as current as you want them to be**
+3)  ** Enjoy an easier way to keep your dependencies as current as you want them to be**
 
 To create feature requests or bug reports, create an [issue in the repository for this skill](https://github.com/atomist-skills/update-npm-dependencies-skill/issues). See the [code](https://github.com/atomist-skills/update-npm-dependencies-skill) for the skill.
 
@@ -85,7 +83,7 @@ To create feature requests or bug reports, create an [issue in the repository fo
 ---
 
 Created by [Atomist][atomist].
-Need Help?  [Join our Slack workspace][slack].
+Need Help? [Join our Slack workspace][slack].
 
-[atomist]: https://atomist.com/ (Atomist - How Teams Deliver Software)
-[slack]: https://join.atomist.com/ (Atomist Community Slack) 
+[atomist]: https://atomist.com/ "Atomist - How Teams Deliver Software"
+[slack]: https://join.atomist.com/ "Atomist Community Slack"
