@@ -37,7 +37,7 @@
    :description "sync dependencies for one Repository",
    :pattern "^npm sync.*$"}],
  :iconUrl
- "https://raw.githubusercontent.com/cljs/logo/master/cljs.png",
+ "file://docs/images/icon.svg",
  :runtime
  {:name "nodejs10",
   :entry_point "eventhandler",
