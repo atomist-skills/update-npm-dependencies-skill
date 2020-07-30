@@ -1,5 +1,5 @@
 {:description
- "Track versions and keep your NPM dependencies up to date",
+ "Track versions and keep your npm dependencies up to date",
  :categories ["DEPENDENCIES" "SECURITY"],
  :repository
  "https://github.com/atomist-skills/update-npm-dependencies-skill",
@@ -17,7 +17,7 @@
    :maxAllowed 1}],
  :homepage
  "https://github.com/atomist-skills/update-npm-dependencies-skill",
- :displayName "update npm dependencies skill",
+ :displayName "Update npm Dependencies",
  :name "update-npm-dependencies",
  :long_description
  "Track all versions of npm dependencies and allow users to set\ncross repo targets for dependency versions.\n",
