@@ -1,6 +1,5 @@
 {:description
  "Track versions and keep your npm dependencies up to date",
- :categories ["DEPENDENCIES" "SECURITY"],
  :repository
  "https://github.com/atomist-skills/update-npm-dependencies-skill",
  :license "Apache-2.0",
@@ -21,8 +20,6 @@
  :name "update-npm-dependencies",
  :long_description
  "Track all versions of npm dependencies and allow users to set\ncross repo targets for dependency versions.\n",
- :iconUrl
- "https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/npm-512.png",
  :title "Update NPM Dependencies",
  :author "Atomist",
  :dispatch "single",
@@ -36,6 +33,9 @@
   {:name "SyncNpmDependency",
    :description "sync dependencies for one Repository",
    :pattern "^npm sync.*$"}],
+ :categories ["DEPENDENCIES" "SECURITY"],
+ :iconUrl
+ "https://cdn4.iconfinder.com/data/icons/logos-brands-5/24/npm-512.png",
  :runtime
  {:name "nodejs10",
   :entry_point "eventhandler",
