@@ -32,7 +32,7 @@
  :homepage
  "https://github.com/atomist-skills/update-npm-dependencies-skill",
  :displayName "Update npm Dependencies",
- :name "update-npm-dependencies",
+ :name "update-npm-dependencies-skill",
  :long_description
  "Track all versions of npm dependencies and allow users to set\ncross repo targets for dependency versions.\n",
  :iconUrl
