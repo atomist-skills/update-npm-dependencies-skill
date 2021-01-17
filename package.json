@@ -13,7 +13,7 @@
     "@atomist/skill-logging": "^0.2.6",
     "@google-cloud/pubsub": "^2.8.0",
     "@google-cloud/storage": "^5.7.2",
-    "fast-glob": "^3.2.4",
+    "fast-glob": "^3.2.5",
     "iconv-lite": "^0.4.19",
     "js-yaml": "^3.14.1",
     "shell-quote": "^1.7.2",
