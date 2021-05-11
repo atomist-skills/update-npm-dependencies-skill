@@ -41,7 +41,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | `@google-cloud/pubsub`                | `2.10.0`     | Google Inc.           | [https://github.com/googleapis/nodejs-pubsub](https://github.com/googleapis/nodejs-pubsub)                                       |
 | `@google-cloud/storage`               | `5.8.2`      | Google Inc.           | [https://github.com/googleapis/nodejs-storage](https://github.com/googleapis/nodejs-storage)                                     |
 | `@grpc/grpc-js`                       | `1.1.7`      | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
-| `@grpc/grpc-js`                       | `1.2.10`     | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
+| `@grpc/grpc-js`                       | `1.2.12`     | Google Inc.           | [https://github.com/grpc/grpc-node/tree/master/packages/grpc-js](https://github.com/grpc/grpc-node/tree/master/packages/grpc-js) |
 | `@grpc/proto-loader`                  | `0.5.3`      | Google Inc.           | [https://github.com/grpc/grpc-node](https://github.com/grpc/grpc-node)                                                           |
 | `@grpc/proto-loader`                  | `0.6.0-pre9` | Google Inc.           | [https://github.com/grpc/grpc-node](https://github.com/grpc/grpc-node)                                                           |
 | `@opencensus/core`                    | `0.0.22`     | Google Inc.           | [https://github.com/census-instrumentation/opencensus-node](https://github.com/census-instrumentation/opencensus-node)           |
@@ -150,7 +150,7 @@ ISC License - [https://www.isc.org/downloads/software-support-policy/isc-license
 | `which-module`          | `2.0.0`  | nexdrew            | [https://github.com/nexdrew/which-module](https://github.com/nexdrew/which-module)                 |
 | `wrappy`                | `1.0.2`  | Isaac Z. Schlueter | [https://github.com/npm/wrappy](https://github.com/npm/wrappy)                                     |
 | `write-file-atomic`     | `3.0.3`  | Rebecca Turner     | [https://github.com/npm/write-file-atomic](https://github.com/npm/write-file-atomic)               |
-| `y18n`                  | `4.0.0`  | Ben Coe            | [https://github.com/yargs/y18n](https://github.com/yargs/y18n)                                     |
+| `y18n`                  | `4.0.3`  | Ben Coe            | [https://github.com/yargs/y18n](https://github.com/yargs/y18n)                                     |
 | `yallist`               | `4.0.0`  | Isaac Z. Schlueter | [https://github.com/isaacs/yallist](https://github.com/isaacs/yallist)                             |
 | `yargs-parser`          | `18.1.3` | Ben Coe            | [https://github.com/yargs/yargs-parser](https://github.com/yargs/yargs-parser)                     |
 
